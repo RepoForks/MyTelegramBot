@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import os
 import random
 import telebot
 from token_config import TELEBOT_TOKEN
@@ -16,6 +17,8 @@ try:
     alias = bot_utils.read_alias_data(aliasfile)
     print('Success')
 except FileNotFoundError:
+    if not os.path.exists('./data'):
+        os.mkdir('./data')
     aliasfile = open('./data/.alias', 'w', encoding='utf-8')
     alias = {}
     print('Not found. Created new file.')
