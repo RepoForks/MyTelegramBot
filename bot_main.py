@@ -71,9 +71,9 @@ def read_poem(message):
 
 @bot.message_handler(commands=['dns'])
 def recommend_dns(message):
-    bot.reply_to(message, '''可用DNS: 1.2.4.8，119.29.29.29，223.5.5.5，
-    114.114.114.114\n中山大学DNS： 202.116.64.2，202.116.64.3
-    \nGoogle DNS (IPv6)2001:4860:4860::8888，2001:4860:4860::8844
+    bot.reply_to(message, '''可用DNS: 1.2.4.8 ，119.29.29.29 ，223.5.5.5 ，114.114.114.114
+    \n中山大学DNS： 202.116.64.2 ，202.116.64.3
+    \nGoogle DNS (IPv6)：2001:4860:4860::8888 ，2001:4860:4860::8844
     ''')
 
 @bot.message_handler(func=lambda message: True)
