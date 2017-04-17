@@ -1,3 +1,4 @@
+# coding=utf-8
 import platform
 
 def read_alias_data(f):
