@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# coding=utf-8
 
 import os
 import random
@@ -11,15 +12,15 @@ bot = telebot.TeleBot(TELEBOT_TOKEN)
 
 print('SCUT Router Telegram Bot is running now.')
 
-print('Loading alias....', end='')
+print('Loading alias....', '')
 try:
-    aliasfile = open('./data/.alias', encoding='utf-8')
+    aliasfile = open('./data/.alias', 'utf-8')
     alias = bot_utils.read_alias_data(aliasfile)
     print('Success')
 except FileNotFoundError:
     if not os.path.exists('./data'):
         os.mkdir('./data')
-    aliasfile = open('./data/.alias', 'w', encoding='utf-8')
+    aliasfile = open('./data/.alias', 'w', 'utf-8')
     alias = {}
     print('Not found. Created new file.')
 finally:
@@ -50,17 +51,17 @@ def bind_or_unbind_alias(message):
         key = args[1]
         value = args[2]
         if key in alias.keys():
-            bot.reply_to(message, '{key} 条目已经被绑定，如果想修改，请先输入/bindalias {key} 进行解绑。'.format(key = key))
+            bot.reply_to(message, '{0} 条目已经被绑定，如果想修改，请先输入/bindalias {0} 进行解绑。'.format(key))
         else:
             alias[key] = value
-            bot_utils.save_alias_data(alias, open('./data/.alias', 'w', encoding='utf-8'))
-            bot.reply_to(message, '{key} 条目成功绑定，将自动更换消息中的 {key} 为 {value}。'.format(key = key, value = value))
+            bot_utils.save_alias_data(alias, open('./data/.alias', 'w', 'utf-8'))
+            bot.reply_to(message, '{0} 条目成功绑定，将自动更换消息中的 {0} 为 {1}。'.format(key, value))
     elif len(args) == 2:
         ## Unbind alias
         if args[1] in alias.keys():
             alias.pop(args[1])
-            bot_utils.save_alias_data(alias, open('./data/.alias', 'w', encoding='utf-8'))
-            bot.reply_to(message, '{key} 条目成功删除。'.format(key = args[1]))
+            bot_utils.save_alias_data(alias, open('./data/.alias', 'w', 'utf-8'))
+            bot.reply_to(message, '{0} 条目成功删除。'.format(args[1]))
         else:
             bot.reply_to(message, '没有找到这个条目。')
     else:
@@ -92,6 +93,6 @@ def echo_alias(message):
         name = message.from_user.first_name
         if (message.from_user.last_name != None):
             name = name + ' ' + message.from_user.last_name
-        bot.send_message(message.chat.id, '{name} 说：{content}'.format(name = name, content = result.strip()))
+        bot.send_message(message.chat.id, '{0} 说：{1}'.format(name, result.strip()))
 
 bot.polling()
