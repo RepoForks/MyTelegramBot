@@ -28,8 +28,8 @@ finally:
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     bot.reply_to(message, '''欢迎使用华工路由器群 Telegram Bot，官方 Telegram 群
-    ：https://t.me/scuters 。\n机器人目前由 @fython 进行开发管理，源码地址在
-    GitHub 搜索 scutrouter 即可找到。\n如有任何意见请在路由器群内 @ 作者反馈。
+    ：https://t.me/scuters 。\n机器人目前由 @fython 进行开发管理，源码地址在：
+    https://github.com/fython/SCUTRouterTelegramBot 。\n如有任何意见请在路由器群内 @ 作者反馈。
     输入 /help 获得更多帮助。
     ''')
 
@@ -37,11 +37,12 @@ def send_welcome(message):
 def send_help(message):
     bot.reply_to(message, '''
     目前本 Bot 支持的功能：
-    /alias <key> <value> ： 在聊天群组中自动替换 key 为 value
+    /bindalias <key> <value> ： 在聊天群组中自动替换 key 为 value
     /excited : 念诗
+    /dns : 显示华工推荐 DNS
     ''')
 
-@bot.message_handler(commands=['alias'])
+@bot.message_handler(commands=['bindalias'])
 def bind_or_unbind_alias(message):
     args = message.text.split(' ')
     if len(args) == 3:
@@ -49,7 +50,7 @@ def bind_or_unbind_alias(message):
         key = args[1]
         value = args[2]
         if key in alias.keys():
-            bot.reply_to(message, '{key} 条目已经被绑定，如果想修改，请先输入/alias {key} 进行解绑。'.format(key = key))
+            bot.reply_to(message, '{key} 条目已经被绑定，如果想修改，请先输入/bindalias {key} 进行解绑。'.format(key = key))
         else:
             alias[key] = value
             bot_utils.save_alias_data(alias, open('./data/.alias', 'w', encoding='utf-8'))
@@ -63,7 +64,7 @@ def bind_or_unbind_alias(message):
         else:
             bot.reply_to(message, '没有找到这个条目。')
     else:
-        bot.reply_to(message, '很抱歉，你输入的参数有误。\n如需绑定请输入 /alias <key> <value>， 解绑请输入 /alias <key>')
+        bot.reply_to(message, '很抱歉，你输入的参数有误。\n如需绑定请输入 /bindalias <key> <value>， 解绑请输入 /bindalias <key>')
 
 @bot.message_handler(commands=['excited'])
 def read_poem(message):
