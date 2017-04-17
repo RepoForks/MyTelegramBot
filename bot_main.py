@@ -14,7 +14,7 @@ print('SCUT Router Telegram Bot is running now.')
 
 print('Loading alias....', '')
 try:
-    aliasfile = open('./data/.alias', 'utf-8')
+    aliasfile = open('./data/.alias', 'r', 'utf-8')
     alias = bot_utils.read_alias_data(aliasfile)
     print('Success')
 except FileNotFoundError:
@@ -94,7 +94,7 @@ def ping(message):
             bot.reply_to(message, output.read())
         except Error:
             bot.reply_to(message, '发生了未知错误。')
-            
+
 @bot.message_handler(commands=['excited'])
 def read_poem(message):
     bot.reply_to(message, random.choice(POEM))
