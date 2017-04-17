@@ -67,6 +67,34 @@ def bind_or_unbind_alias(message):
     else:
         bot.reply_to(message, '很抱歉，你输入的参数有误。\n如需绑定请输入 /bindalias <key> <value>， 解绑请输入 /bindalias <key>')
 
+@bot.message_handler(commands=['ping'])
+def ping(message):
+    args = message.text.split(' ')
+    count = -1
+    if len(args) == 2:
+        ### ping 4 times
+        count = 4
+    elif len(args) == 3:
+        try:
+            count = int(args[2])
+        except Error:
+            bot.reply_to(message, '次数上限参数有误，请输入 1~20 之间的数字。')
+        if count < 1 or count > 20:
+            bot.reply_to(message, '次数上限参数有误，请输入 1~20 之间的数字。')
+            count = -1
+    else:
+        bot.reply_to(message, '/ping <你要测试的地址> <次数，默认为4，限制 1~20>')
+    if count != -1:
+        try:
+            if bot_utils.isWindows():
+                command = 'ping -n {0} {1}'
+            else:
+                command = 'ping -c {0} {1}'
+            output = os.popen(command.format(count, args[1]))
+            bot.reply_to(message, output.read())
+        except Error:
+            bot.reply_to(message, '发生了未知错误。')
+            
 @bot.message_handler(commands=['excited'])
 def read_poem(message):
     bot.reply_to(message, random.choice(POEM))
