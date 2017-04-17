@@ -14,13 +14,13 @@ print('SCUT Router Telegram Bot is running now.')
 
 print('Loading alias....', '')
 try:
-    aliasfile = open('./data/.alias', 'r', 'utf-8')
+    aliasfile = open('./data/.alias', encoding = 'utf-8')
     alias = bot_utils.read_alias_data(aliasfile)
     print('Success')
 except FileNotFoundError:
     if not os.path.exists('./data'):
         os.mkdir('./data')
-    aliasfile = open('./data/.alias', 'w', 'utf-8')
+    aliasfile = open('./data/.alias', 'w', encoding = 'utf-8')
     alias = {}
     print('Not found. Created new file.')
 finally:
