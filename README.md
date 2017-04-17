@@ -1,5 +1,34 @@
 # SCUT Router Group Telegram Bot
 
+### Setup Bot
+
+#### Install pyTelegramBotAPI Dependencies
+
+Please ensure that you have installed `Python 3.x` and `pip` in system.
+
+Then, run this command:
+
+```
+pip install pyTelegramBotAPI
+```
+
+#### Configure Bot Token
+
+Contact [@BotFather](https://t.me/BotFather) in Telegram and create your own bot.
+
+Copy token and write `token_config.py` like this:
+
+```Python
+### Enter your own bot token plz
+TELEBOT_TOKEN = '303421XXX:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+```
+
+### Start
+
+```
+python ./bot_main.py
+```
+
 ### License
 
 ```
