@@ -183,7 +183,7 @@ def process_message(message):
 
 @bot.message_handler(content_types=['photo'])
 def receive_photo(message):
-    if (message.caption != None) and (me.username in message.caption):
+    if (message.caption != None) and (me.username in message.caption or '以图搜图' in message.caption):
         if (bot_utils.isWindows()):
             bot.reply_to(message, 'Bot 目前运行在 Windows 环境下，暂不支持这个操作。')
             return
