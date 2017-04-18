@@ -132,6 +132,19 @@ def recommend_dns(message):
     \nGoogle DNS (IPv6)：2001:4860:4860::8888 ，2001:4860:4860::8844
     ''')
 
+@bot.message_handler(commands=['konachan'])
+def random_anime_pic(message):
+    nsfw = False
+    args = message.text.split(' ')
+    if len(args) == 2 and (args[1] == 'nsfw' or '车' in args[1]):
+        nsfw = True
+    try:
+        choice = bot_utils.random_konachan_pic(nsfw)
+        bot.send_photo(message.chat.id, 'https:' + choice['jpeg_url'], reply_to_message_id=message.message_id, caption='图片来源：' + choice['source'])
+    except Exception as e:
+        print(Exception, ":", e)
+        bot.reply_to(message, '获取 Konachan 图片失败，请稍候再试。')
+
 @bot.message_handler(func=lambda message: True)
 def echo_alias(message):
     ### Do not echo alias in private chat
