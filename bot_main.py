@@ -183,7 +183,7 @@ def process_message(message):
         if (message.reply_to_message.content_type != 'photo'):
             bot.reply_to(message, '诶？这张好像不是图片吧……')
         else:
-            search_photo_and_reply(message, message.reply_to_message.photo[0])
+            search_photo_and_reply(message, message.reply_to_message.photo[1])
 
 
 @bot.message_handler(content_types=['photo'])
@@ -193,7 +193,7 @@ def receive_photo(message):
             bot.reply_to(message, 'Bot 目前运行在 Windows 环境下，暂不支持这个操作。')
             return
         print('Receive a photo')
-        search_photo_and_reply(message, message.photo[0])
+        search_photo_and_reply(message, message.photo[1])
 
 def search_photo_and_reply(message, pic):
     raw = pic.file_id
