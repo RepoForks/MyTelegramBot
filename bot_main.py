@@ -195,7 +195,6 @@ def receive_photo(message):
         downloaded_file = bot.download_file(file_info.file_path)
         with open(path, 'wb') as new_file:
             new_file.write(downloaded_file)
-        print(file_info)
         bot.reply_to(message, '搜图快速入口\nGoogle：{0}\nBaidu：{1}'.format(bot_utils.get_google_search_image(public_url), bot_utils.get_baidu_search_image(public_url)))
 
 bot.polling()
