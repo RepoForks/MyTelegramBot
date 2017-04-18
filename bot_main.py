@@ -122,7 +122,7 @@ def traceroute(message):
             output = os.popen(command.format(args[1]))
             bot.reply_to(message, output.read())
         except Error:
-            bot.reply_to(message, '发生了未知错误。')
+            bot.reply_to(message, '出现了点意外，等会再试试吧……')
 
 @bot.message_handler(commands=['excited'])
 def read_poem(message):
@@ -144,9 +144,8 @@ def random_anime_pic(message):
     try:
         choice = bot_utils.random_konachan_pic(nsfw)
         bot.send_photo(message.chat.id, 'https:' + choice['jpeg_url'], reply_to_message_id=message.message_id, caption='图片来源：' + choice['source'])
-    except Exception as e:
-        print(Exception, ":", e)
-        bot.reply_to(message, '获取 Konachan 图片失败，请稍候再试。')
+    except:
+        bot.reply_to(message, '出现了点意外，等会再试试吧……')
 
 @bot.message_handler(func=lambda message: True)
 def echo_alias(message):
@@ -180,6 +179,12 @@ def process_message(message):
             bot.send_message(message.chat.id, '{0} 为长者续了一秒。长者的生命已经延续 {1} 时 {2} 分 {3} 秒了。\n（接口来自 https://angry.im ）'.format(name, hour, minute, total))
         except urllib.error.HTTPError:
             bot.reply_to(message, '暴力膜蛤不可取。\n（接口来自 https://angry.im ）')
+    if ('以图搜图' in message.text) and (message.reply_to_message != None):
+        if (message.reply_to_message.content_type != 'photo'):
+            bot.reply_to(message, '诶？这张好像不是图片吧……')
+        else:
+            search_photo_and_reply(message, message.reply_to_message.photo[0])
+
 
 @bot.message_handler(content_types=['photo'])
 def receive_photo(message):
@@ -188,13 +193,19 @@ def receive_photo(message):
             bot.reply_to(message, 'Bot 目前运行在 Windows 环境下，暂不支持这个操作。')
             return
         print('Receive a photo')
-        raw = message.photo[0].file_id
-        path = other_config.LINUX_HOST_IMAGE_PATH + raw + '.jpg'
-        public_url = other_config.PUBLIC_IMAGE_PATH + raw + '.jpg'
+        search_photo_and_reply(message, message.photo[0])
+
+def search_photo_and_reply(message, pic):
+    raw = pic.file_id
+    path = other_config.LINUX_HOST_IMAGE_PATH + raw + '.jpg'
+    public_url = other_config.PUBLIC_IMAGE_PATH + raw + '.jpg'
+    try:
         file_info = bot.get_file(raw)
         downloaded_file = bot.download_file(file_info.file_path)
         with open(path, 'wb') as new_file:
             new_file.write(downloaded_file)
-        bot.reply_to(message, '搜图快速入口\nGoogle：{0}\nBaidu：{1}'.format(bot_utils.get_google_search_image(public_url), bot_utils.get_baidu_search_image(public_url)))
+            bot.reply_to(message, '搜图快速入口\nGoogle：{0}\nBaidu：{1}'.format(bot_utils.get_google_search_image(public_url), bot_utils.get_baidu_search_image(public_url)))
+    except:
+        bot.reply_to(message, '出现了点意外，等会再试试吧……')
 
 bot.polling()
