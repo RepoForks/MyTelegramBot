@@ -54,3 +54,9 @@ def random_konachan_pic(nsfw):
         if attempt > 3:
             break
     return choice
+
+def get_google_search_image(url):
+    return 'https://www.google.com.hk/searchbyimage?image_url={}&encoded_image=&image_content=&filename=&hl=zh-HK'.format(url)
+
+def get_baidu_search_image(url):
+    return 'http://image.baidu.com/n/pc_search?rn=10&appid=0&tag=1&queryImageUrl={}'.format(url)

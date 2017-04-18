@@ -23,6 +23,17 @@ Copy token and write `token_config.py` like this:
 TELEBOT_TOKEN = '303421XXX:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
 ```
 
+#### Configure Other Config
+
+For Search By Image functions:
+
+Write `other_config.py`:
+
+```Python
+LINUX_HOST_IMAGE_PATH = '/var/www/html/public/images/'
+PUBLIC_IMAGE_PATH = 'https://example.com/images/'
+```
+
 ### Start
 
 ```

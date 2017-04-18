@@ -8,10 +8,13 @@ from token_config import TELEBOT_TOKEN
 from excited import POEM
 import bot_utils
 import urllib.error
+import other_config
 
 bot = telebot.TeleBot(TELEBOT_TOKEN)
+me = bot.get_me()
 
-print('SCUT Router Telegram Bot is running now.')
+print('Fung Go\'s Telegram Bot is running now.')
+print('Bot Account Infomation: ', me)
 
 print('Loading alias....', end = '')
 try:
@@ -177,5 +180,23 @@ def process_message(message):
             bot.send_message(message.chat.id, '{0} 为长者续了一秒。长者的生命已经延续 {1} 时 {2} 分 {3} 秒了。\n（接口来自 https://angry.im ）'.format(name, hour, minute, total))
         except urllib.error.HTTPError:
             bot.reply_to(message, '暴力膜蛤不可取。\n（接口来自 https://angry.im ）')
+
+@bot.message_handler(content_types=['photo'])
+def receive_photo(message):
+    print(message)
+    if (message.caption != None) and (me.username in message.caption):
+        if (bot_utils.isWindows()):
+            bot.reply_to(message, 'Bot 目前运行在 Windows 环境下，暂不支持这个操作。')
+            return
+        print('Receive a photo')
+        raw = message.photo[0].file_id
+        path = other_config.LINUX_HOST_IMAGE_PATH + raw + '.jpg'
+        public_url = other_config.PUBLIC_IMAGE_PATH + raw + '.jpg'
+        file_info = bot.get_file(raw)
+        downloaded_file = bot.download_file(file_info.file_path)
+        with open(path, 'wb') as new_file:
+            new_file.write(downloaded_file)
+        print(file_info)
+        bot.reply_to(message, '搜图快速入口\nGoogle：{0}\nBaidu：{1}'.format(bot_utils.get_google_search_image(public_url), bot_utils.get_baidu_search_image(public_url)))
 
 bot.polling()
