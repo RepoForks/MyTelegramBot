@@ -1,4 +1,4 @@
-# SCUT Router Group Telegram Bot
+# Fung Go's Telegram Bot
 
 ### Setup Bot
 

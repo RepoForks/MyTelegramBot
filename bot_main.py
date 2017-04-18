@@ -29,11 +29,7 @@ finally:
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    bot.reply_to(message, '''欢迎使用华工路由器群 Telegram Bot，官方 Telegram 群
-    ：https://t.me/scuters 。\n机器人目前由 @fython 进行开发管理，源码地址在：
-    https://github.com/fython/SCUTRouterTelegramBot 。\n如有任何意见请在路由器群内 @ 作者反馈。
-    输入 /help 获得更多帮助。
-    ''')
+    bot.reply_to(message, '欢迎使用烧饼的 Telegram Bot，机器人由 @fython 进行开发管理，源码地址在：https://github.com/fython/SCUTRouterTelegramBot 。输入 /help 获得更多帮助。')
 
 @bot.message_handler(commands=['help'])
 def send_help(message):
@@ -41,7 +37,9 @@ def send_help(message):
     目前本 Bot 支持的功能：
     /bindalias <key> <value> ： 在聊天群组中自动替换 key 为 value
     /excited : 念诗
-    /dns : 显示华工推荐 DNS
+    /dns : 显示推荐 DNS
+    /ping : Ping
+    /traceroute : Traceroute
     ''')
 
 @bot.message_handler(commands=['bindalias'])
