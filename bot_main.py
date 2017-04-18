@@ -7,6 +7,7 @@ import telebot
 from token_config import TELEBOT_TOKEN
 from excited import POEM
 import bot_utils
+import urllib.error
 
 bot = telebot.TeleBot(TELEBOT_TOKEN)
 
@@ -153,14 +154,17 @@ def echo_alias(message):
 
 def process_message(message):
     if ('续一秒' in message.text) or ('續一秒' in message.text):
-        total = int(bot_utils.url_postdata('https://angry.im/p/life', []))
-        hour = total // 3600
-        total = total % 3600
-        minute = total // 60
-        total = total % 60
-        name = message.from_user.first_name
-        if (message.from_user.last_name != None):
-            name = name + ' ' + message.from_user.last_name
-        bot.send_message(message.chat.id, '{0} 为长者续了一秒。长者的生命已经延续 {1} 时 {2} 分 {3} 秒了。\n（接口来自 https://angry.im ）'.format(name, hour, minute, total))
+        try:
+            total = int(bot_utils.url_postdata('https://angry.im/p/life', []))
+            hour = total // 3600
+            total = total % 3600
+            minute = total // 60
+            total = total % 60
+            name = message.from_user.first_name
+            if (message.from_user.last_name != None):
+                name = name + ' ' + message.from_user.last_name
+            bot.send_message(message.chat.id, '{0} 为长者续了一秒。长者的生命已经延续 {1} 时 {2} 分 {3} 秒了。\n（接口来自 https://angry.im ）'.format(name, hour, minute, total))
+        except urllib.error.HTTPError:
+            bot.reply_to(message, '暴力膜蛤不可取。\n（接口来自 https://angry.im ）')
 
 bot.polling()
