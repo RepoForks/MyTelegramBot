@@ -12,7 +12,7 @@ bot = telebot.TeleBot(TELEBOT_TOKEN)
 
 print('SCUT Router Telegram Bot is running now.')
 
-print('Loading alias....', '')
+print('Loading alias....', end = '')
 try:
     aliasfile = open('./data/.alias', encoding = 'utf-8')
     alias = bot_utils.read_alias_data(aliasfile)
@@ -54,13 +54,13 @@ def bind_or_unbind_alias(message):
             bot.reply_to(message, '{0} 条目已经被绑定，如果想修改，请先输入/bindalias {0} 进行解绑。'.format(key))
         else:
             alias[key] = value
-            bot_utils.save_alias_data(alias, open('./data/.alias', 'w', 'utf-8'))
+            bot_utils.save_alias_data(alias, open('./data/.alias', 'w', encoding = 'utf-8'))
             bot.reply_to(message, '{0} 条目成功绑定，将自动更换消息中的 {0} 为 {1}。'.format(key, value))
     elif len(args) == 2:
         ## Unbind alias
         if args[1] in alias.keys():
             alias.pop(args[1])
-            bot_utils.save_alias_data(alias, open('./data/.alias', 'w', 'utf-8'))
+            bot_utils.save_alias_data(alias, open('./data/.alias', 'w', encoding = 'utf-8'))
             bot.reply_to(message, '{0} 条目成功删除。'.format(args[1]))
         else:
             bot.reply_to(message, '没有找到这个条目。')
@@ -85,6 +85,11 @@ def ping(message):
     else:
         bot.reply_to(message, '/ping <你要测试的地址> <次数，默认为4，限制 1~20>')
     if count != -1:
+        symbols = ['<', '>', '=', '|', '&']
+        for symbol in symbols:
+            if symbol in args[1]:
+                bot.reply_to(message, '你输入的地址有误，请不要试图破坏 Bot 正常工作。')
+                return
         try:
             if bot_utils.isWindows():
                 command = 'ping -n {0} {1}'
