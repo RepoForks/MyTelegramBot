@@ -100,6 +100,28 @@ def ping(message):
         except Error:
             bot.reply_to(message, '发生了未知错误。')
 
+@bot.message_handler(commands=['traceroute'])
+def traceroute(message):
+    args = message.text.split(' ')
+    if len(args) != 2:
+        bot.reply_to(message, '/traceroute <你要测试的地址>')
+    else:
+        symbols = ['<', '>', '=', '|', '&']
+        for symbol in symbols:
+            if symbol in args[1]:
+                bot.reply_to(message, '你输入的地址有误，请不要试图破坏 Bot 正常工作。')
+                return
+        try:
+            if bot_utils.isWindows():
+                command = 'tracert {0}'
+            else:
+                command = 'traceroute {0}'
+            bot.reply_to(message, '现在开始测试 {}……耗时可能比较长，请耐心等待。'.format(args[1]))
+            output = os.popen(command.format(args[1]))
+            bot.reply_to(message, output.read())
+        except Error:
+            bot.reply_to(message, '发生了未知错误。')
+
 @bot.message_handler(commands=['excited'])
 def read_poem(message):
     bot.reply_to(message, random.choice(POEM))
