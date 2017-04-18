@@ -205,7 +205,7 @@ def search_photo_and_reply(message, pic):
         downloaded_file = bot.download_file(file_info.file_path)
         with open(path, 'wb') as new_file:
             new_file.write(downloaded_file)
-        bot.send_message(message.chat.id, '搜图快速入口：[{0}](Google)  [{1}](Baidu)'.format(bot_utils.get_google_search_image(public_url), bot_utils.get_baidu_search_image(public_url)), reply_to_message_id=message.message_id, disable_web_page_preview = True, parse_mode = 'Markdown')
+        bot.send_message(message.chat.id, '搜图快速入口：<a herf=\"{0}\">Google</a>  <a href=\"{1}\">Baidu</a>'.format(bot_utils.get_google_search_image(public_url), bot_utils.get_baidu_search_image(public_url)), reply_to_message_id=message.message_id, disable_web_page_preview = True, parse_mode = 'HTML')
     except:
         traceback.print_exc()
         bot.reply_to(message, '出现了点意外，等会再试试吧……')
