@@ -154,11 +154,12 @@ def echo_alias(message):
     result = message.text
     foundAlias = False
     for key in alias.keys():
-        while key in result:
+        final = alias[key]
+        while (key in result) and not (final in result and (result.find(key) >= result.find(final)) and ((result.find(key) + len(key)) <= (result.find(final) + len(final)))):
             foundAlias = True
             result = result.replace(key, '|||reP1aced|||')
         while '|||reP1aced|||' in result:
-            result = result.replace('|||reP1aced|||', ' ' + alias[key] + ' ')
+            result = result.replace('|||reP1aced|||', ' ' + final + ' ')
     if foundAlias:
         name = message.from_user.first_name
         if (message.from_user.last_name != None):
