@@ -98,6 +98,7 @@ def ping(message):
                 command = 'ping -n {0} {1}'
             else:
                 command = 'ping -c {0} {1}'
+            bot.send_chat_action(message.chat.id, 'typing')
             output = os.popen(command.format(count, args[1]))
             bot.reply_to(message, output.read())
         except Error:
@@ -120,6 +121,7 @@ def traceroute(message):
             else:
                 command = 'traceroute {0}'
             bot.reply_to(message, '现在开始测试 {}……耗时可能比较长，请耐心等待。'.format(args[1]))
+            bot.send_chat_action(message.chat.id, 'typing')
             output = os.popen(command.format(args[1]))
             bot.reply_to(message, output.read())
         except Error:
@@ -143,6 +145,7 @@ def random_anime_pic(message):
     if len(args) == 2 and (args[1] == 'nsfw' or '车' in args[1]):
         nsfw = True
     try:
+        bot.send_chat_action(message.chat.id, 'typing')
         choice = bot_utils.random_konachan_pic(nsfw)
         bot.send_photo(message.chat.id, 'https:' + choice['jpeg_url'], reply_to_message_id=message.message_id, caption='图片来源：' + choice['source'])
     except:
@@ -170,6 +173,7 @@ def echo_alias(message):
 def process_message(message):
     if ('续一秒' in message.text) or ('續一秒' in message.text):
         try:
+            bot.send_chat_action(message.chat.id, 'typing')
             total = int(bot_utils.url_postdata('https://angry.im/p/life', []))
             hour = total // 3600
             total = total % 3600
@@ -203,6 +207,7 @@ def search_photo_and_reply(message, pic):
     path = other_config.LINUX_HOST_IMAGE_PATH + raw + '.jpg'
     public_url = other_config.PUBLIC_IMAGE_PATH + raw + '.jpg'
     try:
+        bot.send_chat_action(message.chat.id, 'upload_photo')
         file_info = bot.get_file(raw)
         downloaded_file = bot.download_file(file_info.file_path)
         with open(path, 'wb') as new_file:
