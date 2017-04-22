@@ -186,7 +186,7 @@ def process_message(message):
             bot.reply_to(message, '诶？这张好像不是图片吧……')
         else:
             search_photo_and_reply(message, message.reply_to_message.photo[1])
-    elif ('怕了' in message.text) and (not '害' in message.text) and (message.forward_from_message_id == None):
+    elif ('怕了' in message.text) and (not '害' in message.text) and (message.forward_from == None):
         bot.forward_message(message.chat.id, message.chat.id, message.message_id)
 
 @bot.message_handler(content_types=['photo'])
