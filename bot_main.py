@@ -180,12 +180,13 @@ def process_message(message):
             bot.send_message(message.chat.id, '{0} 为长者续了一秒。长者的生命已经延续 {1} 时 {2} 分 {3} 秒了。\n（接口来自 https://angry.im ）'.format(name, hour, minute, total))
         except urllib.error.HTTPError:
             bot.reply_to(message, '暴力膜蛤不可取。\n（接口来自 https://angry.im ）')
-    if ('以图搜图' in message.text) and (message.reply_to_message != None):
+    elif ('以图搜图' in message.text) and (message.reply_to_message != None):
         if (message.reply_to_message.content_type != 'photo'):
             bot.reply_to(message, '诶？这张好像不是图片吧……')
         else:
             search_photo_and_reply(message, message.reply_to_message.photo[1])
-
+    elif ('怕了' in message.text) and (not '害' in message.text):
+        bot.forward_message(message.chat.id, message.chat.id, message.message_id)
 
 @bot.message_handler(content_types=['photo'])
 def receive_photo(message):
