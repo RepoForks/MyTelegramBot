@@ -221,14 +221,14 @@ def replace_keyword(message):
             while (key in result) and not (final in result and (result.find(key) >= result.find(final)) and ((result.find(key) + len(key)) <= (result.find(final) + len(final)))):
                 result = result.replace(key, '|||reP1aced|||')
             while '|||reP1aced|||' in result:
-                result = result.replace('|||reP1aced|||', ' ' + final + ' ')
+                result = result.replace('|||reP1aced|||', '<b>' + final + '</b>')
             replacer = message.from_user.first_name
             if (message.from_user.last_name != None):
                 replacer = replacer + ' ' + message.from_user.last_name
             author = message.reply_to_message.from_user.first_name
             if (message.reply_to_message.from_user.last_name != None):
                 author = author + ' ' + message.reply_to_message.from_user.last_name
-            bot.send_message(message.chat.id, '{0} 说 {1} 的意思是：“{2}”'.format(replacer, author, result))
+            bot.send_message(message.chat.id, '{0} 说 {1} 的意思是：“{2}”'.format(replacer, author, result), parse_mode = 'HTML')
 
 def search_photo_and_reply(message, pic):
     raw = pic.file_id
