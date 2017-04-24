@@ -202,6 +202,32 @@ def receive_photo(message):
         print('Receive a photo')
         search_photo_and_reply(message, message.photo[1])
 
+@bot.message_handler(commands=['replace'])
+def replace_keyword(message):
+    if (message.reply_to_message == None):
+        bot.reply_to(message, '请选择一条文本消息回复进行替换。')
+    elif (message.reply_to_message.content_type != 'text'):
+        bot.reply_to(message, '请选择一条文本消息回复进行替换。')
+    else:
+        args = message.text.split(' ')
+        if (len(args) != 3):
+            bot.reply_to(message, '你输入的参数不对，格式：/replace <要替换的关键词> <替换结果>')
+        else:
+            key = args[1]
+            final = args[2]
+            result = message.reply_to_message.text
+            while (key in result) and not (final in result and (result.find(key) >= result.find(final)) and ((result.find(key) + len(key)) <= (result.find(final) + len(final)))):
+                result = result.replace(key, '|||reP1aced|||')
+            while '|||reP1aced|||' in result:
+                result = result.replace('|||reP1aced|||', ' ' + final + ' ')
+            replacer = message.from_user.first_name
+            if (message.from_user.last_name != None):
+                replacer = replacer + ' ' + message.from_user.last_name
+            author = message.reply_to_message.from_user.first_name
+            if (message.reply_to_message.from_user.last_name != None):
+                author = author + ' ' + message.reply_to_message.from_user.last_name
+            bot.send_message(message.chat.id, '{0} 说 {1} 的意思是：“{2}”'.format(replacer, author, result))
+
 def search_photo_and_reply(message, pic):
     raw = pic.file_id
     path = other_config.LINUX_HOST_IMAGE_PATH + raw + '.jpg'
