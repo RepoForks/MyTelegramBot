@@ -171,7 +171,9 @@ def echo_alias(message):
     process_message(message)
 
 def process_message(message):
-    if ('续一秒' in message.text) or ('續一秒' in message.text):
+    if (message.text.find('/replace') == 0):
+        replace_keyword(message)
+    elif ('续一秒' in message.text) or ('續一秒' in message.text):
         try:
             bot.send_chat_action(message.chat.id, 'typing')
             total = int(bot_utils.url_postdata('https://angry.im/p/life', []))
