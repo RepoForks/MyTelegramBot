@@ -154,25 +154,26 @@ def random_anime_pic(message):
 @bot.message_handler(func=lambda message: True)
 def echo_alias(message):
     ### Do not echo alias in private chat
-    result = message.text
-    foundAlias = False
-    for key in alias.keys():
-        final = alias[key]
-        while (key in result) and not (final in result and (result.find(key) >= result.find(final)) and ((result.find(key) + len(key)) <= (result.find(final) + len(final)))):
-            foundAlias = True
-            result = result.replace(key, '|||reP1aced|||')
-        while '|||reP1aced|||' in result:
-            result = result.replace('|||reP1aced|||', ' ' + final + ' ')
-    if foundAlias:
-        name = message.from_user.first_name
-        if (message.from_user.last_name != None):
-            name = name + ' ' + message.from_user.last_name
-        bot.send_message(message.chat.id, '{0} 说：{1}'.format(name, result.strip()))
-    process_message(message)
+    if (!process_message(message)):
+        result = message.text
+        foundAlias = False
+        for key in alias.keys():
+            final = alias[key]
+            while (key in result) and not (final in result and (result.find(key) >= result.find(final)) and ((result.find(key) + len(key)) <= (result.find(final) + len(final)))):
+                foundAlias = True
+                result = result.replace(key, '|||reP1aced|||')
+            while '|||reP1aced|||' in result:
+                result = result.replace('|||reP1aced|||', ' ' + final + ' ')
+        if foundAlias:
+            name = message.from_user.first_name
+            if (message.from_user.last_name != None):
+                name = name + ' ' + message.from_user.last_name
+            bot.send_message(message.chat.id, '{0} 说：{1}'.format(name, result.strip()))
 
 def process_message(message):
     if (message.text.find('/replace') == 0):
         replace_keyword(message)
+        return True
     elif ('续一秒' in message.text) or ('續一秒' in message.text):
         try:
             bot.send_chat_action(message.chat.id, 'typing')
@@ -187,13 +188,16 @@ def process_message(message):
             bot.send_message(message.chat.id, '{0} 为长者续了一秒。长者的生命已经延续 {1} 时 {2} 分 {3} 秒了。\n（接口来自 https://angry.im ）'.format(name, hour, minute, total))
         except urllib.error.HTTPError:
             bot.reply_to(message, '暴力膜蛤不可取。\n（接口来自 https://angry.im ）')
+        return True
     elif ('以图搜图' in message.text) and (message.reply_to_message != None):
         if (message.reply_to_message.content_type != 'photo'):
             bot.reply_to(message, '诶？这张好像不是图片吧……')
         else:
             search_photo_and_reply(message, message.reply_to_message.photo[1])
+        return True
     elif ('怕了' in message.text) and (not '害' in message.text) and (message.forward_from == None):
         bot.forward_message(message.chat.id, message.chat.id, message.message_id)
+    return False
 
 @bot.message_handler(content_types=['photo'])
 def receive_photo(message):
