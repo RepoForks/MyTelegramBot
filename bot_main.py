@@ -154,7 +154,7 @@ def random_anime_pic(message):
 @bot.message_handler(func=lambda message: True)
 def echo_alias(message):
     ### Do not echo alias in private chat
-    if (!process_message(message)):
+    if not process_message(message):
         result = message.text
         foundAlias = False
         for key in alias.keys():
