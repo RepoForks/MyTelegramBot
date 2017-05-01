@@ -80,7 +80,7 @@ def ping(message):
     elif len(args) == 3:
         try:
             count = int(args[2])
-        except Error:
+        except:
             bot.reply_to(message, '次数上限参数有误，请输入 1~20 之间的数字。')
         if count < 1 or count > 20:
             bot.reply_to(message, '次数上限参数有误，请输入 1~20 之间的数字。')
