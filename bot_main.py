@@ -101,7 +101,7 @@ def ping(message):
             bot.send_chat_action(message.chat.id, 'typing')
             output = os.popen(command.format(count, args[1]))
             bot.reply_to(message, output.read())
-        except Error:
+        except:
             bot.reply_to(message, '发生了未知错误。')
 
 @bot.message_handler(commands=['traceroute'])
@@ -124,7 +124,7 @@ def traceroute(message):
             bot.send_chat_action(message.chat.id, 'typing')
             output = os.popen(command.format(args[1]))
             bot.reply_to(message, output.read())
-        except Error:
+        except:
             bot.reply_to(message, '出现了点意外，等会再试试吧……')
 
 @bot.message_handler(commands=['excited'])
