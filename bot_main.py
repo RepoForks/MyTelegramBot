@@ -17,20 +17,6 @@ me = bot.get_me()
 print('Fung Go\'s Telegram Bot is running now.')
 print('Bot Account Infomation: ', me)
 
-print('Loading alias....', end = '')
-try:
-    aliasfile = open('./data/.alias', encoding = 'utf-8')
-    alias = bot_utils.read_alias_data(aliasfile)
-    print('Success')
-except FileNotFoundError:
-    if not os.path.exists('./data'):
-        os.mkdir('./data')
-    aliasfile = open('./data/.alias', 'w', encoding = 'utf-8')
-    alias = {}
-    print('Not found. Created new file.')
-finally:
-    aliasfile.close()
-
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     bot.reply_to(message, '欢迎使用烧饼的 Telegram Bot，机器人由 @fython 进行开发管理，源码地址在：https://github.com/fython/SCUTRouterTelegramBot 。输入 /help 获得更多帮助。')
@@ -45,87 +31,6 @@ def send_help(message):
     /ping : Ping
     /traceroute : Traceroute
     ''')
-
-@bot.message_handler(commands=['bindalias'])
-def bind_or_unbind_alias(message):
-    args = message.text.split(' ')
-    if len(args) == 3:
-        ### Bind alias
-        key = args[1]
-        value = args[2]
-        if key in alias.keys():
-            bot.reply_to(message, '{0} 条目已经被绑定，如果想修改，请先输入/bindalias {0} 进行解绑。'.format(key))
-        else:
-            alias[key] = value
-            bot_utils.save_alias_data(alias, open('./data/.alias', 'w', encoding = 'utf-8'))
-            bot.reply_to(message, '{0} 条目成功绑定，将自动更换消息中的 {0} 为 {1}。'.format(key, value))
-    elif len(args) == 2:
-        ## Unbind alias
-        if args[1] in alias.keys():
-            alias.pop(args[1])
-            bot_utils.save_alias_data(alias, open('./data/.alias', 'w', encoding = 'utf-8'))
-            bot.reply_to(message, '{0} 条目成功删除。'.format(args[1]))
-        else:
-            bot.reply_to(message, '没有找到这个条目。')
-    else:
-        bot.reply_to(message, '很抱歉，你输入的参数有误。\n如需绑定请输入 /bindalias <key> <value>， 解绑请输入 /bindalias <key>')
-
-@bot.message_handler(commands=['ping'])
-def ping(message):
-    args = message.text.split(' ')
-    count = -1
-    if len(args) == 2:
-        ### ping 4 times
-        count = 4
-    elif len(args) == 3:
-        try:
-            count = int(args[2])
-        except:
-            bot.reply_to(message, '次数上限参数有误，请输入 1~20 之间的数字。')
-        if count < 1 or count > 20:
-            bot.reply_to(message, '次数上限参数有误，请输入 1~20 之间的数字。')
-            count = -1
-    else:
-        bot.reply_to(message, '/ping <你要测试的地址> <次数，默认为4，限制 1~20>')
-    if count != -1:
-        symbols = ['<', '>', '=', '|', '&']
-        for symbol in symbols:
-            if symbol in args[1]:
-                bot.reply_to(message, '你输入的地址有误，请不要试图破坏 Bot 正常工作。')
-                return
-        try:
-            if bot_utils.isWindows():
-                command = 'ping -n {0} {1}'
-            else:
-                command = 'ping -c {0} {1}'
-            bot.send_chat_action(message.chat.id, 'typing')
-            output = os.popen(command.format(count, args[1]))
-            bot.reply_to(message, output.read())
-        except:
-            bot.reply_to(message, '发生了未知错误。')
-
-@bot.message_handler(commands=['traceroute'])
-def traceroute(message):
-    args = message.text.split(' ')
-    if len(args) != 2:
-        bot.reply_to(message, '/traceroute <你要测试的地址>')
-    else:
-        symbols = ['<', '>', '=', '|', '&']
-        for symbol in symbols:
-            if symbol in args[1]:
-                bot.reply_to(message, '你输入的地址有误，请不要试图破坏 Bot 正常工作。')
-                return
-        try:
-            if bot_utils.isWindows():
-                command = 'tracert {0}'
-            else:
-                command = 'traceroute {0}'
-            bot.reply_to(message, '现在开始测试 {}……耗时可能比较长，请耐心等待。'.format(args[1]))
-            bot.send_chat_action(message.chat.id, 'typing')
-            output = os.popen(command.format(args[1]))
-            bot.reply_to(message, output.read())
-        except:
-            bot.reply_to(message, '出现了点意外，等会再试试吧……')
 
 @bot.message_handler(commands=['excited'])
 def read_poem(message):
@@ -153,22 +58,7 @@ def random_anime_pic(message):
 
 @bot.message_handler(func=lambda message: True)
 def echo_alias(message):
-    ### Do not echo alias in private chat
-    if not process_message(message):
-        result = message.text
-        foundAlias = False
-        for key in alias.keys():
-            final = alias[key]
-            while (key in result) and not (final in result and (result.find(key) >= result.find(final)) and ((result.find(key) + len(key)) <= (result.find(final) + len(final)))):
-                foundAlias = True
-                result = result.replace(key, '|||reP1aced|||')
-            while '|||reP1aced|||' in result:
-                result = result.replace('|||reP1aced|||', ' ' + final + ' ')
-        if foundAlias:
-            name = message.from_user.first_name
-            if (message.from_user.last_name != None):
-                name = name + ' ' + message.from_user.last_name
-            bot.send_message(message.chat.id, '{0} 说：{1}'.format(name, result.strip()))
+    process_message(message)
 
 def process_message(message):
     if (message.text.find('/replace') == 0):
