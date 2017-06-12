@@ -93,8 +93,6 @@ def process_message(message):
         else:
             search_photo_and_reply(message, message.reply_to_message.photo[1])
         return True
-    elif ('怕了' in message.text) and (not '害' in message.text) and (message.forward_from == None):
-        bot.forward_message(message.chat.id, message.chat.id, message.message_id)
     return False
 
 @bot.message_handler(content_types=['photo'])
