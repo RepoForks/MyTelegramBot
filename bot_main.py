@@ -56,6 +56,14 @@ def random_anime_pic(message):
     except:
         bot.reply_to(message, '出现了点意外，等会再试试吧……')
 
+@bot.message_handler(commands=['chattitle'])
+def get_chat_title(message):
+    chat = bot.get_chat(message.chat.id)
+    if (chat.type != 'private'):
+        bot.send_message(message.chat.id, '当前群组标题：' + chat.title)
+    else:
+        bot.send_message(message.chat.id, '请在群组里面使用此功能。')
+
 @bot.message_handler(func=lambda message: True)
 def echo_alias(message):
     process_message(message)
