@@ -144,7 +144,8 @@ def replace_keyword(message, isSendersMean = True):
     if (is_message_outdate(message)):
         return False
     if (message.reply_to_message == None):
-        bot.reply_to(message, '请选择一条文本消息回复进行替换。')
+        if (isSendersMean):
+            bot.reply_to(message, '请选择一条文本消息回复进行替换。')
     elif (message.reply_to_message.content_type != 'text'):
         bot.reply_to(message, '请选择一条文本消息回复进行替换。')
     else:
