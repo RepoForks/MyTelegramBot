@@ -184,7 +184,7 @@ def echo_alias(message):
                     result = result.replace(key, '|||reP1aced|||')
                 while '|||reP1aced|||' in result:
                     result = result.replace('|||reP1aced|||', ' ' + final + ' ')
-            if foundAlias:
+            if foundAlias and ('//' not in message):
                 name = message.from_user.first_name
                 if (message.from_user.last_name != None):
                     name = name + ' ' + message.from_user.last_name
