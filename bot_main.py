@@ -10,6 +10,7 @@ import bot_utils
 import urllib.error
 import other_config
 import traceback
+import time
 
 bot = telebot.TeleBot(TELEBOT_TOKEN)
 me = bot.get_me()
@@ -17,12 +18,22 @@ me = bot.get_me()
 print('Fung Go\'s Telegram Bot is running now.')
 print('Bot Account Infomation: ', me)
 
+def is_message_outdate(message):
+    if (bot_utils.get_now_time() - message.date > 30):
+        return True
+    else:
+        return False
+
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
+    if (is_message_outdate(message)):
+        return False
     bot.reply_to(message, '欢迎使用烧饼的 Telegram Bot，机器人由 @fython 进行开发管理，源码地址在：https://github.com/fython/SCUTRouterTelegramBot 。输入 /help 获得更多帮助。')
 
 @bot.message_handler(commands=['help'])
 def send_help(message):
+    if (is_message_outdate(message)):
+        return False
     bot.reply_to(message, '''
     目前本 Bot 支持的功能：
     /bindalias <key> <value> ： 在聊天群组中自动替换 key 为 value
@@ -34,10 +45,14 @@ def send_help(message):
 
 @bot.message_handler(commands=['excited'])
 def read_poem(message):
+    if (is_message_outdate(message)):
+        return False
     bot.reply_to(message, random.choice(POEM))
 
 @bot.message_handler(commands=['dns'])
 def recommend_dns(message):
+    if (is_message_outdate(message)):
+        return False
     bot.reply_to(message, '''可用DNS: 1.2.4.8 ，119.29.29.29 ，223.5.5.5 ，114.114.114.114
     \n中山大学DNS： 202.116.64.2 ，202.116.64.3
     \nGoogle DNS (IPv6)：2001:4860:4860::8888 ，2001:4860:4860::8844
@@ -45,6 +60,8 @@ def recommend_dns(message):
 
 @bot.message_handler(commands=['konachan'])
 def random_anime_pic(message):
+    if (is_message_outdate(message)):
+        return False
     nsfw = False
     args = message.text.split(' ')
     if len(args) == 2 and (args[1] == 'nsfw' or '车' in args[1]):
@@ -58,6 +75,8 @@ def random_anime_pic(message):
 
 @bot.message_handler(commands=['chattitle'])
 def get_chat_title(message):
+    if (is_message_outdate(message)):
+        return False
     chat = bot.get_chat(message.chat.id)
     if (chat.type != 'private'):
         bot.send_message(message.chat.id, '当前群组标题：' + chat.title)
@@ -69,6 +88,8 @@ def echo_alias(message):
     process_message(message)
 
 def process_message(message):
+    if (is_message_outdate(message)):
+        return False
     if (message.text.find('/replace') == 0):
         replace_keyword(message)
         return True
@@ -93,10 +114,17 @@ def process_message(message):
         else:
             search_photo_and_reply(message, message.reply_to_message.photo[1])
         return True
+    elif (('bot' in message.text.lower()) or ('机器人' in message.text) or ('Aoba' in message.text)) and ('挂了' in message.text):
+        for i in range(0, 4):
+            bot.send_chat_action(message.chat.id, 'typing')
+            time.sleep(3)
+        bot.reply_to(message, '暂时还没挂。')
     return False
 
 @bot.message_handler(content_types=['photo'])
 def receive_photo(message):
+    if (is_message_outdate(message)):
+        return False
     if (message.caption != None) and (me.username in message.caption or '以图搜图' in message.caption):
         if (bot_utils.isWindows()):
             bot.reply_to(message, 'Bot 目前运行在 Windows 环境下，暂不支持这个操作。')
@@ -106,6 +134,8 @@ def receive_photo(message):
 
 @bot.message_handler(commands=['replace'])
 def replace_keyword(message):
+    if (is_message_outdate(message)):
+        return False
     if (message.reply_to_message == None):
         bot.reply_to(message, '请选择一条文本消息回复进行替换。')
     elif (message.reply_to_message.content_type != 'text'):

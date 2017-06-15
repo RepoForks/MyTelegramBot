@@ -4,6 +4,7 @@ import urllib.request
 import json
 import time
 import random
+import datetime
 
 latest_pic = {'id' : 240345, 'updated_at' : 1492495497.0}
 
@@ -60,3 +61,6 @@ def get_google_search_image(url):
 
 def get_baidu_search_image(url):
     return 'http://image.baidu.com/n/pc_search?rn=10&appid=0&tag=1&queryImageUrl={}'.format(url)
+
+def get_now_time():
+    return time.mktime(datetime.datetime.now().timetuple())
