@@ -140,7 +140,7 @@ def bind_or_unbind_alias(message):
         bot.reply_to(message, '输入 /bindalias <key> <value> 进行绑定，<key>为要替换的值，<value>为替换结果。如需解绑请输入 /bindalias <key>。如果不想你发送的文本被替换可以输入 /bindalis ignoreme，再次输入可以取消。')
 
 @bot.message_handler(commands=['replace'])
-def replace_keyword(message, isSendersMean):
+def replace_keyword(message, isSendersMean = True):
     if (is_message_outdate(message)):
         return False
     if (message.reply_to_message == None):
