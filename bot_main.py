@@ -140,7 +140,7 @@ def bind_or_unbind_alias(message):
         bot.reply_to(message, '输入 /bindalias <key> <value> 进行绑定，<key>为要替换的值，<value>为替换结果。如需解绑请输入 /bindalias <key>。如果不想你发送的文本被替换可以输入 /bindalis ignoreme，再次输入可以取消。')
 
 @bot.message_handler(commands=['replace'])
-def replace_keyword(message):
+def replace_keyword(message, isSendersMean):
     if (is_message_outdate(message)):
         return False
     if (message.reply_to_message == None):
@@ -150,7 +150,7 @@ def replace_keyword(message):
     else:
         args = message.text.split(' ')
         if (len(args) != 3):
-            bot.reply_to(message, '你输入的参数不对，格式：/replace <要替换的关键词> <替换结果>')
+            bot.reply_to(message, '你输入的参数不对，格式：/replace <要替换的关键词> <替换结果> 或者 /me <...> <...>')
         else:
             key = args[1]
             final = args[2]
@@ -165,7 +165,11 @@ def replace_keyword(message):
             author = message.reply_to_message.from_user.first_name
             if (message.reply_to_message.from_user.last_name != None):
                 author = author + ' ' + message.reply_to_message.from_user.last_name
-            bot.send_message(message.chat.id, '{0} 说 {1} 的意思是：“{2}”'.format(replacer, author, result), parse_mode = 'HTML')
+            if isSendersMean:
+                formattext = '{0} 说 {1} 的意思是：“{2}”'
+            else:
+                formattext = '{0} ：“{2}”'
+            bot.send_message(message.chat.id, formattext.format(replacer, author, result), parse_mode = 'HTML')
 
 @bot.message_handler(func=lambda message: True)
 def echo_alias(message):
@@ -200,7 +204,10 @@ def process_message(message):
     if (is_message_outdate(message)):
         return False
     if (message.text.find('/replace') == 0):
-        replace_keyword(message)
+        replace_keyword(message, True)
+        return True
+    elif (message.text.find('/me') == 0):
+        replace_keyword(message, False)
         return True
     elif ('续一秒' in message.text) or ('續一秒' in message.text):
         try:
@@ -228,6 +235,7 @@ def process_message(message):
             bot.send_chat_action(message.chat.id, 'typing')
             time.sleep(3)
         bot.reply_to(message, '暂时还没挂。')
+        return True
     return False
 
 @bot.message_handler(content_types=['photo'])
