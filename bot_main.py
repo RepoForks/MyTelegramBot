@@ -97,24 +97,80 @@ def get_chat_title(message):
     else:
         bot.send_message(message.chat.id, '请在群组里面使用此功能。')
 
+@bot.message_handler(commands=['bindalias'])
+def bind_or_unbind_alias(message):
+    if (is_message_outdate(message)):
+        return False
+    args = message.text.split(' ')
+    if len(args) == 3:
+        ### Bind alias
+        key = args[1]
+        value = args[2]
+        if str(message.chat.id) not in alias.keys():
+            alias[str(message.chat.id)] = {}
+        if key in alias[str(message.chat.id)].keys():
+            bot.reply_to(message, '{0} 已经被绑定。你可以输入 /bindalias {0} 来解绑。'.format(key))
+        else:
+            alias[str(message.chat.id)][key] = value
+            bot_utils.save_json_data(alias, open('./data/alias.json', 'w', encoding = 'utf-8'))
+            bot.reply_to(message, '{0} 已经被绑定。{0} 将会自动替换为 {1}。'.format(key, value))
+    elif len(args) == 2:
+        ## Unbind alias
+        if (str(message.chat.id) in alias.keys()) and (args[1] in alias.keys()):
+            alias[str(message.chat.id)].pop(args[1])
+            bot_utils.save_json_data(alias, open('./data/alias.json', 'w', encoding = 'utf-8'))
+            bot.reply_to(message, '{0} 绑定已经清除。'.format(args[1]))
+        else:
+            bot.reply_to(message, '找不到绑定的值。')
+    else:
+        bot.reply_to(message, '输入 /bindalias <key> <value> 进行绑定，<key>为要替换的值，<value>为替换结果。如需解绑请输入 /bindalias <key>。')
+
+@bot.message_handler(commands=['replace'])
+def replace_keyword(message):
+    if (is_message_outdate(message)):
+        return False
+    if (message.reply_to_message == None):
+        bot.reply_to(message, '请选择一条文本消息回复进行替换。')
+    elif (message.reply_to_message.content_type != 'text'):
+        bot.reply_to(message, '请选择一条文本消息回复进行替换。')
+    else:
+        args = message.text.split(' ')
+        if (len(args) != 3):
+            bot.reply_to(message, '你输入的参数不对，格式：/replace <要替换的关键词> <替换结果>')
+        else:
+            key = args[1]
+            final = args[2]
+            result = message.reply_to_message.text
+            while (key in result) and not (final in result and (result.find(key) >= result.find(final)) and ((result.find(key) + len(key)) <= (result.find(final) + len(final)))):
+                result = result.replace(key, '|||reP1aced|||')
+            while '|||reP1aced|||' in result:
+                result = result.replace('|||reP1aced|||', '<b>' + final + '</b>')
+            replacer = message.from_user.first_name
+            if (message.from_user.last_name != None):
+                replacer = replacer + ' ' + message.from_user.last_name
+            author = message.reply_to_message.from_user.first_name
+            if (message.reply_to_message.from_user.last_name != None):
+                author = author + ' ' + message.reply_to_message.from_user.last_name
+            bot.send_message(message.chat.id, '{0} 说 {1} 的意思是：“{2}”'.format(replacer, author, result), parse_mode = 'HTML')
+
 @bot.message_handler(func=lambda message: True)
 def echo_alias(message):
     if not process_message(message):
-        if message.chat.id in alias.keys():
+        if str(message.chat.id) in alias.keys():
             result = message.text
             foundAlias = False
-            for key in alias[message.chat.id].keys():
-                final = alias[message.chat.id][key]
+            for key in alias[str(message.chat.id)].keys():
+                final = alias[str(message.chat.id)][key]
                 while (key in result) and not (final in result and (result.find(key) >= result.find(final)) and ((result.find(key) + len(key)) <= (result.find(final) + len(final)))):
                     foundAlias = True
                     result = result.replace(key, '|||reP1aced|||')
                 while '|||reP1aced|||' in result:
                     result = result.replace('|||reP1aced|||', ' ' + final + ' ')
-                if foundAlias:
-                    name = message.from_user.first_name
-                    if (message.from_user.last_name != None):
-                        name = name + ' ' + message.from_user.last_name
-                        bot.send_message(message.chat.id, '{0} 说：{1}'.format(name, result.strip()))
+            if foundAlias:
+                name = message.from_user.first_name
+                if (message.from_user.last_name != None):
+                    name = name + ' ' + message.from_user.last_name
+                bot.send_message(message.chat.id, '{0} 说：{1}'.format(name, result.strip()))
 
 def process_message(message):
     if (is_message_outdate(message)):
@@ -160,60 +216,6 @@ def receive_photo(message):
             return
         print('Receive a photo')
         search_photo_and_reply(message, message.photo[1])
-
-@bot.message_handler(commands=['bindalias'])
-def bind_or_unbind_alias(message):
-    args = message.text.split(' ')
-    if len(args) == 3:
-        ### Bind alias
-        key = args[1]
-        value = args[2]
-        if message.chat.id not in alias.keys():
-            alias[message.chat.id] = {}
-        if key in alias[meesage.chat.id].keys():
-            bot.reply_to(message, '{0} 已经被绑定。你可以输入 /bindalias {0} 来解绑。'.format(key))
-        else:
-            alias[message.chat.id][key] = value
-            bot_utils.save_json_data(alias, open('./data/alias.json', 'w', encoding = 'utf-8'))
-            bot.reply_to(message, '{0} 已经被绑定。{0} 将会自动替换为 {1}。'.format(key, value))
-    elif len(args) == 2:
-        ## Unbind alias
-        if (message.chat.id in alias.keys()) and (args[1] in alias.keys()):
-            alias[message.chat.id].pop(args[1])
-            bot_utils.save_json_data(alias, open('./data/alias.json', 'w', encoding = 'utf-8'))
-            bot.reply_to(message, '{0} 绑定已经清除。'.format(args[1]))
-        else:
-            bot.reply_to(message, '找不到绑定的值。')
-    else:
-        bot.reply_to(message, '输入 /bindalias <key> <value> 进行绑定，<key>为要替换的值，<value>为替换结果。如需解绑请输入 /bindalias <key>。')
-
-@bot.message_handler(commands=['replace'])
-def replace_keyword(message):
-    if (is_message_outdate(message)):
-        return False
-    if (message.reply_to_message == None):
-        bot.reply_to(message, '请选择一条文本消息回复进行替换。')
-    elif (message.reply_to_message.content_type != 'text'):
-        bot.reply_to(message, '请选择一条文本消息回复进行替换。')
-    else:
-        args = message.text.split(' ')
-        if (len(args) != 3):
-            bot.reply_to(message, '你输入的参数不对，格式：/replace <要替换的关键词> <替换结果>')
-        else:
-            key = args[1]
-            final = args[2]
-            result = message.reply_to_message.text
-            while (key in result) and not (final in result and (result.find(key) >= result.find(final)) and ((result.find(key) + len(key)) <= (result.find(final) + len(final)))):
-                result = result.replace(key, '|||reP1aced|||')
-            while '|||reP1aced|||' in result:
-                result = result.replace('|||reP1aced|||', '<b>' + final + '</b>')
-            replacer = message.from_user.first_name
-            if (message.from_user.last_name != None):
-                replacer = replacer + ' ' + message.from_user.last_name
-            author = message.reply_to_message.from_user.first_name
-            if (message.reply_to_message.from_user.last_name != None):
-                author = author + ' ' + message.reply_to_message.from_user.last_name
-            bot.send_message(message.chat.id, '{0} 说 {1} 的意思是：“{2}”'.format(replacer, author, result), parse_mode = 'HTML')
 
 def search_photo_and_reply(message, pic):
     raw = pic.file_id
