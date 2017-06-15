@@ -8,12 +8,14 @@ import datetime
 
 latest_pic = {'id' : 240345, 'updated_at' : 1492495497.0}
 
-def read_alias_data(f):
-    return {k.strip():v.strip() for k, v in (l.split('=') for l in f)}
+def read_json_data(f):
+    try:
+        return json.loads(f.read())
+    except:
+        return {}
 
-def save_alias_data(d, f):
-    for key in d:
-        f.write('{k}={v}\n'.format(k = key, v = d[key]))
+def save_json_data(obj, f):
+    f.write(json.dumps(obj))
     f.close()
 
 def isWindows():

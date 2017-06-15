@@ -18,6 +18,20 @@ me = bot.get_me()
 print('Fung Go\'s Telegram Bot is running now.')
 print('Bot Account Infomation: ', me)
 
+print('Loading alias....', end = '')
+try:
+    aliasfile = open('./data/alias.json', encoding = 'utf-8')
+    alias = bot_utils.read_json_data(aliasfile)
+    print('Success')
+except FileNotFoundError:
+    if not os.path.exists('./data'):
+        os.mkdir('./data')
+    aliasfile = open('./data/alias.json', 'w', encoding = 'utf-8')
+    alias = {}
+    print('Not found. Created new file.')
+finally:
+    aliasfile.close()
+
 def is_message_outdate(message):
     if (bot_utils.get_now_time() - message.date > 30):
         return True
@@ -85,7 +99,22 @@ def get_chat_title(message):
 
 @bot.message_handler(func=lambda message: True)
 def echo_alias(message):
-    process_message(message)
+    if not process_message(message):
+        if message.chat.id in alias.keys():
+            result = message.text
+            foundAlias = False
+            for key in alias[message.chat.id].keys():
+                final = alias[message.chat.id][key]
+                while (key in result) and not (final in result and (result.find(key) >= result.find(final)) and ((result.find(key) + len(key)) <= (result.find(final) + len(final)))):
+                    foundAlias = True
+                    result = result.replace(key, '|||reP1aced|||')
+                while '|||reP1aced|||' in result:
+                    result = result.replace('|||reP1aced|||', ' ' + final + ' ')
+                if foundAlias:
+                    name = message.from_user.first_name
+                    if (message.from_user.last_name != None):
+                        name = name + ' ' + message.from_user.last_name
+                        bot.send_message(message.chat.id, '{0} 说：{1}'.format(name, result.strip()))
 
 def process_message(message):
     if (is_message_outdate(message)):
@@ -132,6 +161,32 @@ def receive_photo(message):
         print('Receive a photo')
         search_photo_and_reply(message, message.photo[1])
 
+@bot.message_handler(commands=['bindalias'])
+def bind_or_unbind_alias(message):
+    args = message.text.split(' ')
+    if len(args) == 3:
+        ### Bind alias
+        key = args[1]
+        value = args[2]
+        if message.chat.id not in alias.keys():
+            alias[message.chat.id] = {}
+        if key in alias[meesage.chat.id].keys():
+            bot.reply_to(message, '{0} 已经被绑定。你可以输入 /bindalias {0} 来解绑。'.format(key))
+        else:
+            alias[message.chat.id][key] = value
+            bot_utils.save_json_data(alias, open('./data/alias.json', 'w', encoding = 'utf-8'))
+            bot.reply_to(message, '{0} 已经被绑定。{0} 将会自动替换为 {1}。'.format(key, value))
+    elif len(args) == 2:
+        ## Unbind alias
+        if (message.chat.id in alias.keys()) and (args[1] in alias.keys()):
+            alias[message.chat.id].pop(args[1])
+            bot_utils.save_json_data(alias, open('./data/alias.json', 'w', encoding = 'utf-8'))
+            bot.reply_to(message, '{0} 绑定已经清除。'.format(args[1]))
+        else:
+            bot.reply_to(message, '找不到绑定的值。')
+    else:
+        bot.reply_to(message, '输入 /bindalias <key> <value> 进行绑定，<key>为要替换的值，<value>为替换结果。如需解绑请输入 /bindalias <key>。')
+
 @bot.message_handler(commands=['replace'])
 def replace_keyword(message):
     if (is_message_outdate(message)):
@@ -176,4 +231,5 @@ def search_photo_and_reply(message, pic):
         bot.reply_to(message, '出现了点意外，等会再试试吧……')
 
 for trytime in range(0, 3):
+    print('Start polling...')
     bot.polling()
