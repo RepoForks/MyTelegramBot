@@ -183,6 +183,8 @@ def echo_alias(message):
                         return False
                     continue
                 final = alias[str(message.chat.id)][key]
+                if (final == '@' + message.from_user.username):
+                    continue
                 while (key in result) and not (final in result and (result.find(key) >= result.find(final)) and ((result.find(key) + len(key)) <= (result.find(final) + len(final)))):
                     foundAlias = True
                     result = result.replace(key, '|||reP1aced|||')
