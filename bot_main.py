@@ -173,6 +173,8 @@ def echo_alias(message):
         if str(message.chat.id) in alias.keys():
             result = message.text
             foundAlias = False
+            if '//' in result:
+                return False
             for key in alias[str(message.chat.id)].keys():
                 if ('ignoreme@' in key):
                     if (key.replace('ignoreme@', '') in message.from_user.username):
@@ -184,7 +186,7 @@ def echo_alias(message):
                     result = result.replace(key, '|||reP1aced|||')
                 while '|||reP1aced|||' in result:
                     result = result.replace('|||reP1aced|||', ' ' + final + ' ')
-            if foundAlias and ('//' not in message):
+            if foundAlias:
                 name = message.from_user.first_name
                 if (message.from_user.last_name != None):
                     name = name + ' ' + message.from_user.last_name
