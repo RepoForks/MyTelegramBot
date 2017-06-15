@@ -170,6 +170,8 @@ def replace_keyword(message):
 @bot.message_handler(func=lambda message: True)
 def echo_alias(message):
     if not process_message(message):
+        if (is_message_outdate(message)):
+            return False
         if str(message.chat.id) in alias.keys():
             result = message.text
             foundAlias = False
