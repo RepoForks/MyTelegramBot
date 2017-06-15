@@ -199,8 +199,8 @@ def process_message(message):
         else:
             search_photo_and_reply(message, message.reply_to_message.photo[1])
         return True
-    elif (('bot' in message.text.lower()) or ('机器人' in message.text) or ('Aoba' in message.text)) and ('挂了' in message.text):
-        for i in range(0, 4):
+    elif (('bot' in message.text.lower()) or ('机器人' in message.text) or ('Aoba' in message.text.lower())) and ('挂了' in message.text):
+        for i in range(0, 2):
             bot.send_chat_action(message.chat.id, 'typing')
             time.sleep(3)
         bot.reply_to(message, '暂时还没挂。')
