@@ -130,7 +130,7 @@ def bind_or_unbind_alias(message):
                 alias[str(message.chat.id)][key] = 'true'
                 bot_utils.save_json_data(alias, open('./data/alias.json', 'w', encoding = 'utf-8'))
                 bot.reply_to(message, '现在你发送的文本不会被替换。')
-        elif (str(message.chat.id) in alias.keys()) and (args[1] in alias.keys()):
+        elif (str(message.chat.id) in alias.keys()) and (args[1] in alias[str(message.chat.id)].keys()):
             alias[str(message.chat.id)].pop(args[1])
             bot_utils.save_json_data(alias, open('./data/alias.json', 'w', encoding = 'utf-8'))
             bot.reply_to(message, '{0} 绑定已经清除。'.format(args[1]))
