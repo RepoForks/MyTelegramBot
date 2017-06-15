@@ -175,4 +175,5 @@ def search_photo_and_reply(message, pic):
         traceback.print_exc()
         bot.reply_to(message, '出现了点意外，等会再试试吧……')
 
-bot.polling()
+for trytime in range(0, 3):
+    bot.polling()
