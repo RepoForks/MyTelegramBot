@@ -106,24 +106,38 @@ def bind_or_unbind_alias(message):
         ### Bind alias
         key = args[1]
         value = args[2]
-        if str(message.chat.id) not in alias.keys():
-            alias[str(message.chat.id)] = {}
-        if key in alias[str(message.chat.id)].keys():
-            bot.reply_to(message, '{0} 已经被绑定。你可以输入 /bindalias {0} 来解绑。'.format(key))
+        if ('ignoreme' in key) or ('续一秒' in key) or ('以图搜图' in key):
+            bot.reply_to(message, '这条规则不能被绑定。')
         else:
-            alias[str(message.chat.id)][key] = value
-            bot_utils.save_json_data(alias, open('./data/alias.json', 'w', encoding = 'utf-8'))
-            bot.reply_to(message, '{0} 已经被绑定。{0} 将会自动替换为 {1}。'.format(key, value))
+            if str(message.chat.id) not in alias.keys():
+                alias[str(message.chat.id)] = {}
+            if key in alias[str(message.chat.id)].keys():
+                bot.reply_to(message, '{0} 已经被绑定。你可以输入 /bindalias {0} 来解绑。'.format(key))
+            else:
+                alias[str(message.chat.id)][key] = value
+                bot_utils.save_json_data(alias, open('./data/alias.json', 'w', encoding = 'utf-8'))
+                bot.reply_to(message, '{0} 已经被绑定。{0} 将会自动替换为 {1}。'.format(key, value))
     elif len(args) == 2:
-        ## Unbind alias
-        if (str(message.chat.id) in alias.keys()) and (args[1] in alias.keys()):
+        if (args[1] == 'ignoreme'):
+            key = 'ignoreme@' + message.from_user.username
+            if str(message.chat.id) not in alias.keys():
+                alias[str(message.chat.id)] = {}
+            if key in alias[str(message.chat.id)].keys():
+                alias[str(message.chat.id)].pop(key)
+                bot_utils.save_json_data(alias, open('./data/alias.json', 'w', encoding = 'utf-8'))
+                bot.reply_to(message, '现在你发送的文本会被替换。')
+            else:
+                alias[str(message.chat.id)][key] = 'true'
+                bot_utils.save_json_data(alias, open('./data/alias.json', 'w', encoding = 'utf-8'))
+                bot.reply_to(message, '现在你发送的文本不会被替换。')
+        elif (str(message.chat.id) in alias.keys()) and (args[1] in alias.keys()):
             alias[str(message.chat.id)].pop(args[1])
             bot_utils.save_json_data(alias, open('./data/alias.json', 'w', encoding = 'utf-8'))
             bot.reply_to(message, '{0} 绑定已经清除。'.format(args[1]))
         else:
             bot.reply_to(message, '找不到绑定的值。')
     else:
-        bot.reply_to(message, '输入 /bindalias <key> <value> 进行绑定，<key>为要替换的值，<value>为替换结果。如需解绑请输入 /bindalias <key>。')
+        bot.reply_to(message, '输入 /bindalias <key> <value> 进行绑定，<key>为要替换的值，<value>为替换结果。如需解绑请输入 /bindalias <key>。如果不想你发送的文本被替换可以输入 /bindalis ignoreme，再次输入可以取消。')
 
 @bot.message_handler(commands=['replace'])
 def replace_keyword(message):
@@ -160,6 +174,10 @@ def echo_alias(message):
             result = message.text
             foundAlias = False
             for key in alias[str(message.chat.id)].keys():
+                if ('ignoreme@' in key):
+                    if (key.replace('ignoreme@', '') in message.from_user.username):
+                        return False
+                    continue
                 final = alias[str(message.chat.id)][key]
                 while (key in result) and not (final in result and (result.find(key) >= result.find(final)) and ((result.find(key) + len(key)) <= (result.find(final) + len(final)))):
                     foundAlias = True
