@@ -267,4 +267,4 @@ def search_photo_and_reply(message, pic):
 
 for trytime in range(0, 3):
     print('Start polling...')
-    bot.polling()
+    bot.polling(none_stop=True)
